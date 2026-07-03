@@ -64,7 +64,24 @@ def build_hero():
                             "Scout, filter, and compare every player across all statistical "
                             "categories in a single unified view.",
                             className="text-secondary mb-0", style={"fontSize": "14px"}
-                        )
+                        ),
+                        # ── Refresh Data button ──────────────────────────────
+                        html.Div([
+                            dbc.Button(
+                                [html.I(className="bi bi-arrow-clockwise me-2"), "Refresh Data"],
+                                id="scrape-btn",
+                                color="warning",
+                                size="sm",
+                                className="mt-3",
+                                style={"fontWeight": "600", "letterSpacing": "0.5px",
+                                       "borderRadius": "8px"},
+                            ),
+                            html.Div(
+                                id="scrape-status",
+                                className="mt-2 small",
+                                style={"minHeight": "22px"},
+                            ),
+                        ]),
                     ], xs=12, md=4, className="mb-3 mb-md-0"),
 
                     dbc.Col([
@@ -214,6 +231,9 @@ def build_scatter_section():
 # ─────────────────────────────────────────────────────────────────────────────
 def build_layout():
     return dbc.Container([
+        # ── Hidden polling interval (disabled until scrape starts) ────────────
+        dcc.Interval(id="scrape-poll", interval=1500, n_intervals=0, disabled=True),
+
         # ── Hero ──────────────────────────────────────────────────────────────
         build_hero(),
 
