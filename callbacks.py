@@ -11,13 +11,91 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash import Input, Output, State, html, dcc
 import dash_bootstrap_components as dbc
+import subprocess
+import threading
+import time as _time
 
 from data   import df, min_price, max_price
 from config import ALL_TABLE_COLUMNS, ALL_METRICS, PLOTLY_LAYOUT_TEMPLATE
 
+# ── Scraper state (module-level, shared across callbacks) ─────────────────────
+_scrape_state = {"status": "idle", "log": []}  # status: idle | running | done | error
+_scrape_lock  = threading.Lock()
+
+
+
 
 def register_callbacks(app):
+    # ── Scrape: kick off in background thread ─────────────────────────────────
+    @app.callback(
+        [Output("scrape-btn",  "disabled"),
+         Output("scrape-poll", "disabled"),
+         Output("scrape-status", "children")],
+        Input("scrape-btn", "n_clicks"),
+        prevent_initial_call=True,
+    )
+    def start_scrape(n_clicks):
+        global _scrape_state
+        with _scrape_lock:
+            if _scrape_state["status"] == "running":
+                return True, False, _status_badge("Already running…", "warning")
+
+            _scrape_state = {"status": "running", "log": ["Starting scraper…"]}
+
+        def _run():
+            import sys, os
+            script = os.path.join(os.path.dirname(__file__), "scrape_fifa_stats.py")
+            try:
+                proc = subprocess.Popen(
+                    [sys.executable, script],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    cwd=os.path.dirname(__file__) or ".",
+                )
+                for line in proc.stdout:
+                    with _scrape_lock:
+                        _scrape_state["log"].append(line.rstrip())
+                proc.wait()
+                with _scrape_lock:
+                    if proc.returncode == 0:
+                        _scrape_state["status"] = "done"
+                        _scrape_state["log"].append("✅ Scrape complete — reload the page to see new data.")
+                    else:
+                        _scrape_state["status"] = "error"
+                        _scrape_state["log"].append(f"❌ Scraper exited with code {proc.returncode}")
+            except Exception as exc:
+                with _scrape_lock:
+                    _scrape_state["status"] = "error"
+                    _scrape_state["log"].append(f"❌ Error: {exc}")
+
+        threading.Thread(target=_run, daemon=True).start()
+        return True, False, _status_badge("🔄 Scraping started…", "warning")
+
+    # ── Scrape: poll status every 1.5 s ──────────────────────────────────────
+    @app.callback(
+        [Output("scrape-btn",    "disabled", allow_duplicate=True),
+         Output("scrape-poll",   "disabled", allow_duplicate=True),
+         Output("scrape-status", "children", allow_duplicate=True)],
+        Input("scrape-poll", "n_intervals"),
+        prevent_initial_call=True,
+    )
+    def poll_scrape_status(n):
+        with _scrape_lock:
+            status = _scrape_state["status"]
+            last   = _scrape_state["log"][-1] if _scrape_state["log"] else ""
+
+        if status == "running":
+            return True, False, _status_badge(f"🔄 {last}", "warning")
+        elif status == "done":
+            return False, True, _status_badge(last, "success")
+        elif status == "error":
+            return False, True, _status_badge(last, "danger")
+        # idle — stop polling
+        return False, True, ""
+
     # ── KPI Cards ─────────────────────────────────────────────────────────────
+
     @app.callback(
         [Output("kpi-players-count", "children"),
          Output("kpi-avg-xg",        "children"),
@@ -404,3 +482,14 @@ def _section_label(text, mt=False):
     if mt:
         cls += " mt-3"
     return html.Div(text, className=cls, style={"letterSpacing": "1px", "fontSize": "9px"})
+
+
+def _status_badge(msg, color="secondary"):
+    """Small inline badge used by the scrape status callbacks."""
+    return dbc.Badge(
+        msg,
+        color=color,
+        className="px-3 py-2",
+        style={"fontSize": "11px", "borderRadius": "6px", "maxWidth": "100%",
+               "whiteSpace": "normal", "wordBreak": "break-word"},
+    )
