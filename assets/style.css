@@ -436,3 +436,165 @@ h1, h2, h3, h4, h5, h6 {
     padding: 14px;
     margin-top: 15px;
 }
+
+/* --- Single-Page Dashboard Premium Styles --- */
+
+/* Hero Header styling */
+.hero-header {
+    background: linear-gradient(135deg, rgba(13, 27, 56, 0.85) 0%, rgba(5, 12, 28, 0.95) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    padding: 24px 32px;
+}
+
+.hero-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 2.2rem;
+    background: linear-gradient(135deg, #ffffff 30%, #00b8ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+/* KPI Cards Row */
+.kpi-container {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.kpi-card-premium {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(22, 42, 85, 0.4) 0%, rgba(13, 27, 56, 0.6) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 150px;
+}
+
+.kpi-card-premium:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-hover);
+    box-shadow: 0 8px 24px rgba(0, 184, 255, 0.15);
+}
+
+.kpi-card-premium .kpi-val {
+    font-family: 'Outfit', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 4px;
+}
+
+.kpi-card-premium .kpi-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+/* Column Category Toggle Buttons */
+.category-toggle-container {
+    display: flex;
+    background: rgba(13, 27, 56, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+    gap: 4px;
+}
+
+.category-toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.category-toggle-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.category-toggle-btn.active {
+    background: linear-gradient(135deg, #0072ff 0%, #00b8ff 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 184, 255, 0.35);
+}
+
+/* Premium DataTable Adjustments */
+.dash-spreadsheet-container .dash-spreadsheet-inner {
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.dash-header th {
+    background-color: #0b1528 !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
+    padding: 12px 10px !important;
+}
+
+/* Side Comparison Panel Header */
+.panel-title {
+    font-size: 1.25rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+/* Compare Empty State */
+.compare-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.compare-empty-state i {
+    font-size: 40px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+/* Price Range Slider Styling override */
+.rc-slider-rail {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.rc-slider-track {
+    background-color: var(--accent-blue) !important;
+}
+
+.rc-slider-handle {
+    border: 2px solid var(--accent-blue) !important;
+    background-color: var(--bg-primary) !important;
+}
+
+.rc-slider-handle:hover, .rc-slider-handle:active, .rc-slider-handle:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 5px var(--accent-blue) !important;
+}
+
+.rc-slider-mark-text {
+    color: var(--text-secondary) !important;
+    font-size: 10px !important;
+}
